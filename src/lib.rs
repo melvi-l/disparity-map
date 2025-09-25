@@ -8,8 +8,7 @@ pub fn greet(name: &str) -> String {
     format!("Hello, {name} from Rust+WASM!")
 }
 
-#[wasm_bindgen]
-pub fn decode_png(data: &[u8]) -> Vec<u16> {
+pub fn decode_png(data: &[u8]) -> (Vec<u16>, u32, u32) {
     let cursor = Cursor::new(data);
     let decoder = Decoder::new(cursor);
     let mut reader = decoder.read_info().expect("Unable to PNG reader");
@@ -40,5 +39,5 @@ pub fn decode_png(data: &[u8]) -> Vec<u16> {
 
     println!("Decoded u16 buffer length => {}", decoded_data.len());
 
-    return decoded_data;
+    return (decoded_data, info.width, info.height);
 }

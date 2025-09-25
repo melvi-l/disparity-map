@@ -12,6 +12,9 @@ use winit::{
 #[derive(Default)]
 struct App<'window> {
     window: Option<Arc<Window>>,
+    png_decoded: &'window [u16],
+    png_width: u32,
+    png_height: u32,
     ctx: Option<Ctx<'window>>,
 }
 
@@ -25,7 +28,12 @@ impl<'window> ApplicationHandler for App<'window> {
                 .create_window(Window::default_attributes().with_title("winit exemple"))
                 .expect("Unable to create window"),
         );
-        let ctx = Ctx::new(window.clone());
+        let ctx = Ctx::new(
+            window.clone(),
+            self.png_decoded,
+            self.png_width,
+            self.png_height,
+        );
         self.window = Some(window.clone());
         self.ctx = Some(ctx);
     }
@@ -71,9 +79,14 @@ impl<'window> ApplicationHandler for App<'window> {
     }
 }
 
-pub async fn run() {
+pub async fn run(png_decoded: &[u16], png_width: u32, png_height: u32) {
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(ControlFlow::Poll);
-    let mut app = App::default();
+    let mut app = App {
+        png_decoded,
+        png_width,
+        png_height,
+        ..Default::default()
+    };
     event_loop.run_app(&mut app).expect("Unable to run app");
 }
